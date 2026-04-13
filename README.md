@@ -3,7 +3,7 @@
 
 A cinematic, video‑first sales tool designed for leasing teams, sponsors, and event partners. Built as a self‑contained, browser‑based experience that replaces static PDFs and fragmented presentations.
 
-**Live Demo:** [https://mall-of-america-liart.vercel.app/](https://mall-of-america-liart.vercel.app/)
+**Live Demo:** https://mall-of-america-liart.vercel.app/
 
 ---
 
