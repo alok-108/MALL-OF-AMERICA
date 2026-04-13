@@ -420,8 +420,9 @@
 
     <!-- 1. CINEMATIC INTRO — STRONGER HERO -->
     <section id="hero" style="padding: 0; min-height: 100vh;">
+        <!-- Updated video source to use local MP4 file -->
         <video class="video-bg" autoplay muted loop playsinline poster="https://images.pexels.com/photos/2884590/pexels-photo-2884590.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2">
-            <source src="https://player.vimeo.com/external/403185268.sd.mp4?s=0a2d3d7f8b9c0d1e2f3a4b5c6d7e8f9a" type="video/mp4">
+            <source src="Mall_of_America_Video_Links_AI_Generation.mp4" type="video/mp4">
         </video>
         <div class="video-overlay"></div>
         <div class="section-content" style="text-align: left; max-width: 1200px; margin-top: 5rem;">
@@ -453,7 +454,7 @@
             <div class="grid-2">
                 <div>
                     <h2>More than a mall.<br>A <span class="gold-accent">city within a city.</span></h2>
-                    <p style="font-size: 1.2rem; margin-bottom: 2.5rem; opacity: 0.85;">Mall of America is the largest retail and entertainment complex in North America. It’s a global tourism anchor with an economic impact exceeding $2 billion annually.</p>
+                    <p style="font-size: 1.2rem; margin-bottom: 2.5rem; opacity: 0.85;">Mall of America is the largest retail and entertainment complex in North America. It's a global tourism anchor with an economic impact exceeding $2 billion annually.</p>
                     
                     <!-- ANIMATED STATS EXPLOSION (counters) -->
                     <div style="display: flex; gap: 3rem; margin-bottom: 2rem; flex-wrap: wrap;">
@@ -733,7 +734,7 @@
                 });
             });
 
-            // Video fallback
+            // Video fallback (updated to use local file)
             const video = document.querySelector('video');
             if(video) {
                 video.play().catch(() => { video.muted = true; video.play(); });
