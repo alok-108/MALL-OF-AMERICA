@@ -324,7 +324,9 @@
                         <div style="margin-top: 2rem;"><span class="stat-number">50+</span> <span class="stat-label">new dining concepts in 5 years</span></div>
                     </div>
                     <div class="media-frame">
-                        <img src="images/moa-upscale-dining.jpeg" alt="Upscale dining at Mall of America" loading="lazy">
+                        <!-- डाइनिंग इमेज - अगर .jpeg लोड न हो तो .jpg और .png ट्राई करेगा -->
+                        <img src="images/moa-upscale-dining.jpeg" alt="Upscale dining at Mall of America" loading="lazy" 
+                             onerror="this.onerror=null; this.src='images/moa-upscale-dining.jpg';">
                     </div>
                 </div>
             </div>
@@ -438,6 +440,17 @@
         updateUI();
 
         heroBtn.addEventListener('click', e => { e.preventDefault(); goToSlide(1); });
+
+        // डिबगिंग: सभी इमेज की लोडिंग चेक करें
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            img.addEventListener('error', function() {
+                console.warn('❌ इमेज लोड नहीं हुई:', this.src);
+            });
+            img.addEventListener('load', function() {
+                console.log('✅ इमेज लोड हो गई:', this.src);
+            });
+        });
     })();
 </script>
 </body>
