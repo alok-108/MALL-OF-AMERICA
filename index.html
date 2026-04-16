@@ -3,20 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Mall of America · Interactive Sales Deck</title>
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <title>Mall of America · Next‑Gen Sales Deck</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <style>
+        /* ===== RESET & BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: #0b0b0b;
-            color: #f0f0f0;
+            background: #050505;
+            color: #f5f5f7;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             overflow: hidden;
@@ -25,129 +34,74 @@
         }
         .deck-container { position: relative; width: 100%; height: 100vh; overflow: hidden; }
         .slide {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0; visibility: hidden;
-            transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), visibility 0.6s;
+            transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), visibility 0.8s;
             overflow-y: auto; overflow-x: hidden;
         }
         .slide.active { opacity: 1; visibility: visible; z-index: 10; }
         .slide-content {
-            max-width: 1400px; margin: 0 auto; padding: 4rem;
-            position: relative; z-index: 5;
-            min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            max-width: 1440px; margin: 0 auto; padding: 5rem 4rem;
+            position: relative; z-index: 5; min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center;
         }
-        .video-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: -2;
-        }
+        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
         .video-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+            background: radial-gradient(circle at 30% 40%, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 100%);
             z-index: -1;
         }
-        h1 { font-size: 5.5rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.04em; margin-bottom: 1.5rem; }
-        h2 { font-size: 3.8rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
-        h3 { font-size: 2rem; font-weight: 600; margin-bottom: 1rem; }
+        h1 { font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 1.5rem; }
+        h2 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
         .gold-accent { color: #d4af37; }
-        .stat-number { font-size: 3.5rem; font-weight: 800; color: #d4af37; line-height: 1; }
-        .stat-label { text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; opacity: 0.8; }
+        .stat-number { font-size: 3.8rem; font-weight: 800; color: #d4af37; line-height: 1; }
+        .stat-label { text-transform: uppercase; letter-spacing: 3px; font-size: 0.9rem; opacity: 0.75; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-        .metric-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin: 3rem 0; }
-        .metric-card {
-            background: rgba(20,20,20,0.6); backdrop-filter: blur(12px);
-            padding: 2rem 1.8rem; border-radius: 28px;
-            border: 1px solid rgba(212,175,55,0.15);
+        .glass-card {
+            background: rgba(20,20,20,0.5); backdrop-filter: blur(16px);
+            border: 1px solid rgba(212,175,55,0.2); border-radius: 36px;
+            padding: 2.5rem; box-shadow: 0 30px 50px -15px rgba(0,0,0,0.5);
         }
-        .brand-showcase { display: flex; flex-wrap: wrap; gap: 2rem 3rem; margin-top: 2rem; }
-        .brand-item { font-size: 1.5rem; font-weight: 600; opacity: 0.9; border-right: 1px solid rgba(212,175,55,0.4); padding-right: 2rem; }
         .btn {
-            display: inline-block; background: #d4af37; color: #0b0b0b;
-            padding: 1rem 2.8rem; border-radius: 50px; font-weight: 700;
-            text-decoration: none; margin-top: 2rem; border: 1px solid #d4af37;
-            transition: all 0.3s; font-size: 1rem; letter-spacing: 0.05em; cursor: pointer;
+            display: inline-block; background: #d4af37; color: #050505;
+            padding: 1rem 2.8rem; border-radius: 60px; font-weight: 700;
+            text-decoration: none; border: 1px solid #d4af37;
+            transition: all 0.3s; letter-spacing: 0.03em; cursor: pointer;
         }
-        .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); margin-left: 1rem; }
-        .btn-outline:hover { background: white; color: #0b0b0b; }
+        .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.35); margin-left: 1rem; }
+        .btn-outline:hover { background: white; color: #050505; }
         .btn:hover { background: transparent; color: #d4af37; }
-        .media-frame {
-            border-radius: 32px; overflow: hidden;
-            box-shadow: 0 30px 50px -10px rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.1);
+        .canvas-3d-container { width: 100%; height: 500px; border-radius: 32px; overflow: hidden; border: 1px solid rgba(212,175,55,0.3); }
+        /* Navigation */
+        .nav-fixed {
+            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 200;
+            display: flex; align-items: center; gap: 1.2rem;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(20px);
+            padding: 0.9rem 2.5rem; border-radius: 100px;
+            border: 1px solid rgba(212,175,55,0.4);
         }
-        img, video { max-width: 100%; display: block; }
-        .sub-module-tag {
-            display: inline-block; background: rgba(212,175,55,0.15);
-            border: 1px solid #d4af37; color: #d4af37;
-            padding: 0.25rem 1.2rem; border-radius: 40px;
-            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;
-        }
-        .event-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2rem; margin-top: 2rem; }
-        .event-card {
-            background: rgba(30,30,30,0.7); backdrop-filter: blur(8px);
-            padding: 2rem; border-radius: 24px;
-        }
-        .money-badge {
-            background: #1e1e1e; border-left: 6px solid #d4af37;
-            padding: 1.2rem 2rem; border-radius: 16px; margin: 2rem 0; font-weight: 600;
-        }
-        /* Deck Navigation */
-        .deck-nav {
-            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-            z-index: 100; display: flex; align-items: center; gap: 1.5rem;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);
-            padding: 0.8rem 2rem; border-radius: 60px;
-            border: 1px solid rgba(212,175,55,0.3);
-        }
-        .nav-arrow {
-            background: transparent; border: none; color: white;
-            font-size: 1.2rem; cursor: pointer; width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-        }
-        .nav-arrow:hover { background: #d4af37; color: #0b0b0b; border-color: #d4af37; }
+        .nav-arrow { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
+        .nav-arrow:hover { background: #d4af37; color: black; }
         .nav-dots { display: flex; gap: 0.8rem; }
-        .dot {
-            width: 10px; height: 10px; border-radius: 50%;
-            background: rgba(255,255,255,0.4); cursor: pointer;
-            transition: all 0.3s; border: none; padding: 0;
-        }
-        .dot.active { background: #d4af37; width: 30px; border-radius: 20px; }
-        .slide-counter { color: white; font-size: 0.9rem; font-weight: 600; letter-spacing: 2px; }
-        .progress-bar {
-            position: fixed; top: 0; left: 0; width: 0%; height: 4px;
-            background: #d4af37; z-index: 200; transition: width 0.3s;
-        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s; border: none; }
+        .dot.active { background: #d4af37; width: 28px; border-radius: 20px; }
+        .progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, #d4af37, #f5e7a3); z-index: 300; transition: width 0.4s; }
         .persona-switch {
-            position: fixed; bottom: 2rem; right: 2rem; z-index: 150;
-            background: rgba(20,20,20,0.8); backdrop-filter: blur(12px);
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+            background: rgba(20,20,20,0.7); backdrop-filter: blur(16px);
             padding: 0.5rem; border-radius: 60px; border: 1px solid #d4af37;
             display: flex; gap: 0.5rem;
         }
-        .persona-btn {
-            background: transparent; border: none; color: #fff;
-            padding: 0.7rem 1.8rem; border-radius: 40px; font-weight: 600;
-            font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
-        }
-        .persona-btn.active { background: #d4af37; color: #0b0b0b; }
-        .deck-logo {
-            position: fixed; top: 2rem; left: 2rem; z-index: 150;
-            font-weight: 800; font-size: 1.7rem; letter-spacing: -0.02em;
-            color: white; text-transform: uppercase;
-        }
+        .persona-btn { background: transparent; border: none; color: #fff; padding: 0.8rem 2rem; border-radius: 40px; font-weight: 600; cursor: pointer; }
+        .persona-btn.active { background: #d4af37; color: #050505; }
+        .deck-logo { position: fixed; top: 2rem; left: 2rem; z-index: 200; font-weight: 800; font-size: 1.8rem; letter-spacing: -0.02em; color: white; text-transform: uppercase; }
         .deck-logo span { font-weight: 300; color: #d4af37; }
-        .scroll-hint {
-            position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
-            color: white; font-size: 0.9rem; opacity: 0.7; text-transform: uppercase;
-            letter-spacing: 4px; z-index: 20;
-        }
-        @media (max-width: 900px) {
-            .slide-content { padding: 3rem 1.5rem; }
-            h1 { font-size: 3.5rem; } h2 { font-size: 2.8rem; }
-            .grid-2 { grid-template-columns: 1fr; gap: 2rem; }
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .sub-module-tag { display: inline-block; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; color: #d4af37; padding: 0.3rem 1.5rem; border-radius: 40px; margin-bottom: 1.5rem; }
+        .swiper { width: 100%; padding: 20px 0 40px; }
+        .swiper-slide { background: rgba(30,30,30,0.6); backdrop-filter: blur(10px); border-radius: 28px; padding: 2rem; border: 1px solid rgba(212,175,55,0.15); height: auto; }
+        .brand-logo { font-size: 2rem; font-weight: 700; margin-bottom: 0.8rem; color: #d4af37; }
+        @media (max-width: 1024px) { .slide-content { padding: 3rem 2rem; } .grid-2 { grid-template-columns: 1fr; gap: 2.5rem; } }
+        @media (max-width: 600px) { .persona-switch { bottom: 5rem; } }
     </style>
 </head>
 <body>
@@ -157,200 +111,159 @@
 
 <!-- Persona Toggle -->
 <div class="persona-switch">
-    <button class="persona-btn active" data-persona="brand"><i class="fas fa-store"></i> I'm a Brand</button>
-    <button class="persona-btn" data-persona="event"><i class="fas fa-calendar-star"></i> Event Organizer</button>
+    <button class="persona-btn active" data-persona="brand"><i class="fas fa-store"></i> Brand</button>
+    <button class="persona-btn" data-persona="event"><i class="fas fa-calendar-star"></i> Event</button>
 </div>
 
 <div class="deck-container">
-    <div class="slides-wrapper">
-        
-        <!-- SLIDE 1: HERO -->
-        <div class="slide active" id="slide1">
-            <video class="video-bg" autoplay muted loop playsinline poster="https://images.pexels.com/photos/2884590/pexels-photo-2884590.jpeg">
-                <source src="Mall_of_America_Video_Links_AI_Generation.mp4" type="video/mp4">
-            </video>
-            <div class="video-overlay"></div>
-            <div class="slide-content" style="text-align: left; max-width: 1200px;">
-                <div class="sub-module-tag" id="heroSub">NORTH AMERICA'S RETAIL POWERHOUSE</div>
-                <h1 style="font-size: 6.5rem; max-width: 1100px; line-height: 1;">
-                    <span>40 Million Visitors.</span>
-                    <span>One Destination.</span>
-                    <span class="gold-accent" style="font-size: 4rem; display: block; margin-top: 0.5rem;">The most powerful retail platform in North America.</span>
-                </h1>
-                <p style="font-size: 1.5rem; max-width: 700px; margin-bottom: 2rem; opacity: 0.9;">
-                    5.6M sq ft · $2B+ economic impact · 520+ stores · 7-acre theme park
-                </p>
+    <!-- SLIDE 1: HERO -->
+    <div class="slide active" id="slide1">
+        <video class="video-bg" autoplay muted loop playsinline poster="https://images.pexels.com/photos/2884590/pexels-photo-2884590.jpeg">
+            <source src="Mall_of_America_Video_Links_AI_Generation.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+        <div id="three-particles" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events: none;"></div>
+        <div class="slide-content" style="max-width:1300px;">
+            <div class="sub-module-tag" id="heroSub">RETAIL POWERHOUSE · LEASING OPPORTUNITIES</div>
+            <h1 id="heroHeadline">
+                <span>40 Million Visitors.</span>
+                <span>One Destination.</span>
+                <span class="gold-accent" style="display:block; font-size:clamp(2.5rem,5vw,4rem);">Build your flagship inside the most visited destination in America.</span>
+            </h1>
+            <p style="font-size:1.4rem; max-width:750px; opacity:0.9; margin-bottom:2rem;">
+                <i class="fas fa-map-pin" style="color:#d4af37;"></i> 5.6M sq ft · $2B+ impact · 520+ stores
+            </p>
+            <div>
+                <a class="btn" id="heroCtaBtn">Explore Leasing →</a>
+                <a class="btn btn-outline">Request Deck</a>
+            </div>
+            <div class="glass-card" style="max-width:550px; margin-top:3rem; padding:1.5rem 2rem;">
+                <i class="fas fa-chart-line" style="color:#d4af37; margin-right:10px;"></i>
+                <span style="font-size:1.3rem;">Avg. sales per sq ft: <strong>$850+</strong> · Top 1% US retail</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: WHY MOA + 3D + Chart -->
+    <div class="slide" id="slide2">
+        <div class="slide-content">
+            <span class="sub-module-tag">Unmatched Platform</span>
+            <div class="grid-2">
                 <div>
-                    <a class="btn" id="heroCtaBtn">Explore Leasing →</a>
-                    <a class="btn btn-outline">Request Leasing Deck</a>
-                </div>
-                <div class="money-badge" style="max-width: 550px; margin-top: 3rem;">
-                    <i class="fas fa-chart-line" style="color:#d4af37; margin-right: 10px;"></i>
-                    <span style="font-size:1.2rem;">Avg. sales per sq ft: <strong>$850+</strong> · Top 1% US retail productivity</span>
-                </div>
-            </div>
-            <div class="scroll-hint"><i class="fas fa-chevron-down"></i> USE ARROWS OR DOTS</div>
-        </div>
-
-        <!-- SLIDE 2: WHY MOA -->
-        <div class="slide" id="slide2">
-            <div class="slide-content">
-                <div class="sub-module-tag">Unmatched platform</div>
-                <div class="grid-2">
-                    <div>
-                        <h2>More than a mall.<br>A <span class="gold-accent">city within a city.</span></h2>
-                        <p style="font-size: 1.2rem; margin-bottom: 2.5rem; opacity: 0.85;">Mall of America is the largest retail and entertainment complex in North America. It's a global tourism anchor with an economic impact exceeding $2 billion annually.</p>
-                        <div style="display: flex; gap: 3rem; margin-bottom: 2rem; flex-wrap: wrap;">
-                            <div><span class="stat-number">40</span>M+ <span class="stat-label">Annual visitors</span></div>
-                            <div><span class="stat-number">95</span>% <span class="stat-label">Occupancy</span></div>
-                            <div><span class="stat-number">8</span>x <span class="stat-label">MN population</span></div>
-                        </div>
-                        <p><i class="fas fa-map-pin" style="color:#d4af37; margin-right: 10px;"></i> Adjacent to MSP · 20,000 parking · 37% visitors travel 150+ miles</p>
-                        <div class="money-badge">
-                            <i class="fas fa-dollar-sign" style="color:#d4af37;"></i>
-                            <strong>$2.1B annual economic impact</strong> · 14,000+ employees
-                        </div>
+                    <h2>More than a mall.<br><span class="gold-accent">A city within a city.</span></h2>
+                    <p style="font-size:1.2rem; margin-bottom:2rem;">Largest retail & entertainment complex in North America. $2.1B annual economic impact.</p>
+                    <div style="display:flex; gap:2rem; margin-bottom:2rem;">
+                        <div><span class="stat-number">40</span><span class="stat-number">M+</span> <span class="stat-label">Annual visitors</span></div>
+                        <div><span class="stat-number">95</span><span class="stat-number">%</span> <span class="stat-label">Occupancy</span></div>
                     </div>
-                    <div class="media-frame">
-                        <img src="images/moa-aerial-golden-hour.png" alt="Mall of America aerial view at golden hour" style="width:100%;" loading="lazy">
-                        <div style="padding: 1.5rem; background: #0f0f0f;">
-                            <p style="font-weight: 300;"><i class="fas fa-users" style="margin-right: 10px; color:#d4af37;"></i> 60% Midwest · 40% international · avg. income $85k+</p>
-                        </div>
+                    <div class="chart-container" style="background:rgba(0,0,0,0.3); padding:1.5rem; border-radius:28px;">
+                        <canvas id="visitorChart" width="400" height="200" style="width:100%; height:200px;"></canvas>
+                        <p style="text-align:center; margin-top:10px;"><i class="fas fa-users"></i> 60% Midwest · 40% International</p>
                     </div>
                 </div>
-                <div class="metric-grid">
-                    <div class="metric-card"><span class="stat-number">520+</span> <span class="stat-label">specialty stores</span></div>
-                    <div class="metric-card"><span class="stat-number">80+</span> <span class="stat-label">dining concepts</span></div>
-                    <div class="metric-card"><span class="stat-number">300+</span> <span class="stat-label">annual events</span></div>
+                <div>
+                    <div id="three-canvas-container" class="canvas-3d-container"></div>
+                    <p style="margin-top:1rem; opacity:0.8;"><i class="fas fa-cube"></i> Interactive 3D preview · Drag to rotate (auto)</p>
                 </div>
             </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; margin-top:3rem;">
+                <div class="glass-card"><span class="stat-number">520+</span> <span class="stat-label">specialty stores</span></div>
+                <div class="glass-card"><span class="stat-number">80+</span> <span class="stat-label">dining concepts</span></div>
+                <div class="glass-card"><span class="stat-number">300+</span> <span class="stat-label">annual events</span></div>
+            </div>
         </div>
+    </div>
 
-        <!-- SLIDE 3: RETAIL & LUXURY -->
-        <div class="slide" id="slide3">
-            <div class="slide-content">
-                <div class="sub-module-tag">Retail reimagined</div>
-                <h2>Flagship destinations.<br>Unmatched performance.</h2>
-                <div class="grid-2" style="margin-bottom: 3rem;">
-                    <div>
-                        <p style="font-size: 1.2rem; margin-bottom: 2rem;">MOA is home to more than a dozen flagship stores, many ranking among the top-performing locations nationwide.</p>
-                        <div class="brand-showcase">
-                            <span class="brand-item">NIKE</span><span class="brand-item">LULULEMON</span><span class="brand-item">CANADA GOOSE</span>
-                            <span class="brand-item">SKIMS</span><span class="brand-item">VICTORIA'S SECRET</span><span class="brand-item">POP MART</span>
-                        </div>
-                        <p style="margin-top: 2rem;"><i class="fas fa-chart-line" style="color:#d4af37;"></i> 20+ new tenants in 2024, including first-to-market concepts.</p>
-                        <div class="money-badge">
-                            <i class="fas fa-trophy"></i> #1 Nike store globally (volume) · Top 3 Lululemon in North America
-                        </div>
-                    </div>
-                    <div class="media-frame">
-                        <img src="images/moa-luxury-retail-interior.png" alt="Luxury retail interior with marble and gold accents" loading="lazy" style="width:100%;">
-                    </div>
+    <!-- SLIDE 3: RETAIL & LUXURY (Swiper) -->
+    <div class="slide" id="slide3">
+        <div class="slide-content">
+            <span class="sub-module-tag">Flagship Ecosystem</span>
+            <h2>Where brands become <span class="gold-accent">legends.</span></h2>
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"><div class="brand-logo">NIKE</div><p>#1 global volume store</p><img src="images/moa-luxury-retail-interior.png" style="width:100%; border-radius:16px; margin-top:10px;" alt="Nike"></div>
+                    <div class="swiper-slide"><div class="brand-logo">LULULEMON</div><p>Top 3 North America</p><img src="images/moa-aerial-golden-hour.png" style="width:100%; border-radius:16px;" alt="Lululemon"></div>
+                    <div class="swiper-slide"><div class="brand-logo">CANADA GOOSE</div><p>Flagship experience</p><img src="images/moa-upscale-dining.jpeg" style="width:100%; border-radius:16px;" alt="Canada Goose"></div>
+                    <div class="swiper-slide"><div class="brand-logo">SKIMS</div><p>First-to-market</p><img src="images/moa-nickelodeon-universe.png" style="width:100%; border-radius:16px;"></div>
                 </div>
-                <div style="background: rgba(255,255,255,0.02); border-radius: 40px; padding: 2.5rem; border: 1px solid #333;">
-                    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
-                        <span class="sub-module-tag" style="margin-bottom:0;">📐 Leasing Paths</span>
-                        <span style="opacity:0.6;">Luxury · Flagship · Pop-up · F&B</span>
-                    </div>
-                    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                        <div><i class="fas fa-gem" style="color:#d4af37;"></i> <strong>Luxury Wing</strong></div>
-                        <div><i class="fas fa-store"></i> <strong>Flagship</strong> — 20k+ sq ft</div>
-                        <div><i class="fas fa-calendar-week"></i> <strong>Pop-up</strong></div>
-                        <div><i class="fas fa-utensils"></i> <strong>Dining</strong></div>
-                    </div>
-                    <a href="#" style="display:inline-block; margin-top:1.8rem; color:#d4af37; text-decoration:none; font-weight:700;">Explore leasing options →</a>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+            <div style="margin-top:2rem;" class="glass-card">
+                <i class="fas fa-trophy gold-accent"></i> <strong>Leasing Paths:</strong> Luxury Wing · Flagship · Pop-up · F&B
+                <a href="#" class="btn" style="margin-left:2rem;">Inquire Now</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: ATTRACTIONS + ROI CALCULATOR -->
+    <div class="slide" id="slide4">
+        <div class="slide-content">
+            <span class="sub-module-tag">Built-in Audience</span>
+            <div class="grid-2">
+                <div>
+                    <h2>World-class attractions.</h2>
+                    <div style="margin:2rem 0;"><h3 style="color:#d4af37;">Nickelodeon Universe</h3><p>7-acre indoor theme park · 27+ rides</p></div>
+                    <div style="margin:2rem 0;"><h3 style="color:#d4af37;">FlyOver America</h3><p>Immersive flight ride</p></div>
+                    <div style="margin:2rem 0;"><h3 style="color:#d4af37;">SEA LIFE Aquarium</h3><p>1.2M gallon aquarium</p></div>
+                </div>
+                <div class="glass-card">
+                    <h3><i class="fas fa-calculator"></i> Sponsorship ROI Estimator</h3>
+                    <label>Budget ($)</label>
+                    <input type="range" id="budgetSlider" min="10000" max="500000" value="100000" step="5000" style="width:100%;">
+                    <p>Estimated Impressions: <span id="impressionValue">2.5M</span></p>
+                    <p>Projected Reach: <span id="reachValue">850k</span></p>
+                    <p style="margin-top:1rem;"><i class="fas fa-chart-pie"></i> Based on 40M annual visitors</p>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- SLIDE 4: ATTRACTIONS -->
-        <div class="slide" id="slide4">
-            <div class="slide-content">
-                <div class="sub-module-tag">Beyond shopping</div>
-                <h2>World-class attractions.<br>Built-in audience.</h2>
-                <div class="grid-2">
-                    <div>
-                        <div style="margin-bottom: 2.5rem;"><h3 style="color:#d4af37;">Nickelodeon Universe</h3><p>7-acre indoor theme park with 27+ rides.</p></div>
-                        <div style="margin-bottom: 2.5rem;"><h3 style="color:#d4af37;">FlyOver America</h3><p>Immersive flight simulation ride.</p></div>
-                        <div style="margin-bottom: 2.5rem;"><h3 style="color:#d4af37;">SEA LIFE Aquarium</h3><p>1.2 million gallon aquarium.</p></div>
-                        <p><i class="fas fa-ticket-alt"></i> 300+ events yearly — entertainment drives 37% of out-of-area trips</p>
-                    </div>
-                    <div class="media-frame">
-                        <img src="images/moa-nickelodeon-universe.png" alt="Nickelodeon Universe indoor theme park" loading="lazy" style="width:100%;">
-                    </div>
+    <!-- SLIDE 5: EVENTS -->
+    <div class="slide" id="slide5">
+        <div class="slide-content">
+            <span class="sub-module-tag">Global Stage</span>
+            <h2>Your brand.<br>Center stage.</h2>
+            <div class="grid-2">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                    <div class="glass-card"><i class="fas fa-music gold-accent"></i><h4>Concerts</h4><p>Huntington Bank Rotunda</p></div>
+                    <div class="glass-card"><i class="fas fa-bullhorn"></i><h4>Activations</h4><p>Pop-ups & launches</p></div>
+                    <div class="glass-card"><i class="fas fa-users"></i><h4>Corporate</h4><p>JW Marriott</p></div>
+                    <div class="glass-card"><i class="fas fa-video"></i><h4>Performing Arts</h4></div>
+                </div>
+                <div>
+                    <img src="images/moa-concert-rotunda.png" alt="Concert" style="width:100%; border-radius:32px;">
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- SLIDE 5: EVENTS & PLATFORM -->
-        <div class="slide" id="slide5">
-            <div class="slide-content">
-                <div class="sub-module-tag">Global stage</div>
-                <div class="grid-2">
-                    <div>
-                        <h2>Your brand.<br>Center stage.</h2>
-                        <p style="font-size:1.2rem; margin-bottom:2rem;">From pop-up activations to full-scale concerts, MOA is a premier event platform.</p>
-                        <div class="event-grid">
-                            <div class="event-card"><i class="fas fa-music" style="color:#d4af37; font-size: 2rem;"></i><h4>Concerts & Performances</h4><p>Huntington® Bank Rotunda</p></div>
-                            <div class="event-card"><i class="fas fa-bullhorn" style="color:#d4af37;"></i><h4>Brand Activations</h4><p>Pop-ups, launches</p></div>
-                            <div class="event-card"><i class="fas fa-users"></i><h4>Corporate & Expo</h4><p>Flexible spaces, JW Marriott</p></div>
-                            <div class="event-card"><i class="fas fa-video"></i><h4>Performing Arts</h4><p>Cultural programming</p></div>
-                        </div>
-                    </div>
-                    <div class="media-frame">
-                        <img src="images/moa-concert-rotunda.png" alt="Live concert inside mall rotunda" loading="lazy">
-                        <div style="padding:1.5rem; background:#0d0d0d;"><p><strong>Sponsorship tiers:</strong> Title, Presenting, Experiential — audience data provided.</p></div>
-                    </div>
-                </div>
-                <div style="margin-top: 4rem; border-top: 1px solid #333; padding-top: 3rem;">
-                    <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
-                        <span class="sub-module-tag">🤝 Sponsorship & Partnership</span>
-                        <span>Audience: 40M+ annual · median income $85k</span>
-                    </div>
-                    <p style="margin-top: 1rem;">Access turnkey activations, digital integration, and category exclusivity.</p>
-                    <a href="#" class="btn">Download Sponsorship Deck</a>
-                </div>
+    <!-- SLIDE 6: DINING -->
+    <div class="slide" id="slide6">
+        <div class="slide-content">
+            <div class="grid-2">
+                <div><h2>80+ restaurants.<br><span class="gold-accent">Food as destination.</span></h2><p>Celebrity chefs · Global street food</p><span class="stat-number">50+</span> <span class="stat-label">new concepts in 5y</span></div>
+                <div><img src="images/moa-upscale-dining.jpeg" onerror="this.src='images/moa-upscale-dining.jpg'" style="border-radius:32px; width:100%;"></div>
             </div>
         </div>
+    </div>
 
-        <!-- SLIDE 6: DINING & LIFESTYLE -->
-        <div class="slide" id="slide6">
-            <div class="slide-content">
-                <div class="sub-module-tag">Culinary & lifestyle</div>
-                <div class="grid-2">
-                    <div>
-                        <h2>80+ restaurants.<br>Food as destination.</h2>
-                        <p>From celebrity chef concepts to global street food, MOA's dining drives dwell time.</p>
-                        <div style="margin-top: 2rem;"><span class="stat-number">50+</span> <span class="stat-label">new dining concepts in 5 years</span></div>
-                    </div>
-                    <div class="media-frame">
-                        <!-- डाइनिंग इमेज - अगर .jpeg लोड न हो तो .jpg और .png ट्राई करेगा -->
-                        <img src="images/moa-upscale-dining.jpeg" alt="Upscale dining at Mall of America" loading="lazy" 
-                             onerror="this.onerror=null; this.src='images/moa-upscale-dining.jpg';">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: CONTACT / CTA -->
-        <div class="slide" id="slide7">
-            <div class="slide-content" style="text-align: center; justify-content: center;">
-                <span class="sub-module-tag">Let's build the future</span>
-                <h2 style="font-size: 3.5rem;">Secure your place<br>at the center of it all.</h2>
-                <p style="max-width: 700px; margin: 1.5rem auto; opacity:0.9;">Leasing · Sponsorships · Event bookings · Venue partnerships</p>
-                <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="#" class="btn"><i class="fas fa-file-signature"></i> Start a Leasing Conversation</a>
-                    <a href="#" class="btn btn-outline"><i class="fas fa-handshake"></i> Explore Sponsorships</a>
-                    <a href="#" class="btn btn-outline"><i class="fas fa-calendar-star"></i> Book Your Activation</a>
-                </div>
-                <p style="margin-top: 4rem; font-size:0.9rem; opacity:0.5;">© Mall of America · Interactive Sales Deck</p>
+    <!-- SLIDE 7: CTA -->
+    <div class="slide" id="slide7">
+        <div class="slide-content" style="text-align:center; justify-content:center;">
+            <h2>Secure your place.</h2>
+            <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+                <a href="#" class="btn">Leasing</a>
+                <a href="#" class="btn btn-outline">Sponsorships</a>
+                <a href="#" class="btn btn-outline">Book Event</a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Deck Navigation -->
-<div class="deck-nav">
+<!-- Navigation -->
+<div class="nav-fixed">
     <button class="nav-arrow" id="prevSlide"><i class="fas fa-chevron-left"></i></button>
     <div class="nav-dots" id="navDots"></div>
     <button class="nav-arrow" id="nextSlide"><i class="fas fa-chevron-right"></i></button>
@@ -359,6 +272,9 @@
 
 <script>
     (function(){
+        "use strict";
+        
+        // ---------- SLIDE NAVIGATION ----------
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
         let currentSlide = 0;
@@ -368,89 +284,209 @@
         
         function createDots() {
             navDots.innerHTML = '';
-            for (let i = 0; i < totalSlides; i++) {
+            for (let i=0; i<totalSlides; i++) {
                 const dot = document.createElement('button');
                 dot.classList.add('dot');
-                if (i === 0) dot.classList.add('active');
-                dot.addEventListener('click', () => goToSlide(i));
+                dot.addEventListener('click', ()=> goToSlide(i));
                 navDots.appendChild(dot);
             }
         }
         createDots();
-
+        
         function updateUI() {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === currentSlide));
-            document.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
-            slideCounter.textContent = `${currentSlide + 1} / ${totalSlides}`;
-            progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+            slides.forEach((s,i)=> s.classList.toggle('active', i===currentSlide));
+            document.querySelectorAll('.dot').forEach((d,i)=> d.classList.toggle('active', i===currentSlide));
+            slideCounter.textContent = `${currentSlide+1} / ${totalSlides}`;
+            progressBar.style.width = `${((currentSlide+1)/totalSlides)*100}%`;
             
             if (currentSlide === 0) {
-                gsap.from("h1 span", { opacity: 0, y: 40, duration: 0.8, stagger: 0.15 });
+                gsap.from("#slide1 h1 span", { opacity:0, y:50, duration:0.8, stagger:0.15 });
+            }
+            if (currentSlide === 1 && !window.chartDrawn) {
+                drawChart();
+                window.chartDrawn = true;
             }
         }
-
+        
         function goToSlide(index) {
-            if (index < 0) index = 0;
-            if (index >= totalSlides) index = totalSlides - 1;
+            if (index<0) index=0;
+            if (index>=totalSlides) index=totalSlides-1;
             currentSlide = index;
             updateUI();
         }
-
-        document.getElementById('nextSlide').addEventListener('click', () => goToSlide(currentSlide + 1));
-        document.getElementById('prevSlide').addEventListener('click', () => goToSlide(currentSlide - 1));
         
-        window.addEventListener('keydown', e => {
-            if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
-            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+        document.getElementById('nextSlide').addEventListener('click', ()=> goToSlide(currentSlide+1));
+        document.getElementById('prevSlide').addEventListener('click', ()=> goToSlide(currentSlide-1));
+        window.addEventListener('keydown', e=> {
+            if (e.key === 'ArrowRight') goToSlide(currentSlide+1);
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide-1);
         });
-
+        
         let touchStartX = 0;
-        window.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
-        window.addEventListener('touchend', e => {
+        window.addEventListener('touchstart', e=> touchStartX = e.changedTouches[0].screenX);
+        window.addEventListener('touchend', e=> {
             const diff = e.changedTouches[0].screenX - touchStartX;
-            if (Math.abs(diff) > 50) diff < 0 ? goToSlide(currentSlide + 1) : goToSlide(currentSlide - 1);
+            if (Math.abs(diff) > 50) diff<0 ? goToSlide(currentSlide+1) : goToSlide(currentSlide-1);
         });
-
-        // Persona toggle
+        
+        // Persona Toggle
         const personaBtns = document.querySelectorAll('.persona-btn');
         const heroSub = document.getElementById('heroSub');
         const heroBtn = document.getElementById('heroCtaBtn');
-        
         function setPersona(persona) {
-            personaBtns.forEach(btn => btn.classList.remove('active'));
+            personaBtns.forEach(b=> b.classList.remove('active'));
             document.querySelector(`.persona-btn[data-persona="${persona}"]`).classList.add('active');
+            const goldSpan = document.querySelector('#slide1 .gold-accent');
             if (persona === 'brand') {
                 heroSub.textContent = 'RETAIL POWERHOUSE · LEASING OPPORTUNITIES';
-                document.querySelector('#slide1 .gold-accent').textContent = 'Build your flagship inside the most visited destination in America.';
+                goldSpan.textContent = 'Build your flagship inside the most visited destination in America.';
                 heroBtn.textContent = 'Explore Leasing →';
             } else {
                 heroSub.textContent = 'EVENT PLATFORM · SPONSORSHIP READY';
-                document.querySelector('#slide1 .gold-accent').textContent = 'Activate your brand in front of 40 million annual visitors.';
+                goldSpan.textContent = 'Activate your brand in front of 40 million annual visitors.';
                 heroBtn.textContent = 'Book an Activation →';
             }
         }
-        personaBtns.forEach(btn => btn.addEventListener('click', () => setPersona(btn.dataset.persona)));
-
+        personaBtns.forEach(btn=> btn.addEventListener('click', ()=> setPersona(btn.dataset.persona)));
+        
         // Video play
         const video = document.querySelector('video');
-        if(video) video.play().catch(() => { video.muted = true; video.play(); });
-
-        // GSAP init
-        gsap.from("h1 span", { opacity: 0, y: 40, duration: 0.8, stagger: 0.15 });
-        updateUI();
-
-        heroBtn.addEventListener('click', e => { e.preventDefault(); goToSlide(1); });
-
-        // डिबगिंग: सभी इमेज की लोडिंग चेक करें
-        const images = document.querySelectorAll('img');
-        images.forEach(img => {
-            img.addEventListener('error', function() {
-                console.warn('❌ इमेज लोड नहीं हुई:', this.src);
+        if(video) video.play().catch(()=>{ video.muted=true; video.play(); });
+        
+        heroBtn.addEventListener('click', e=> { e.preventDefault(); goToSlide(1); });
+        
+        // ---------- THREE.JS Setup Slide2 ----------
+        function initThree() {
+            const container = document.getElementById('three-canvas-container');
+            if (!container) return;
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x050505);
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(3,2,5);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+            
+            const ambient = new THREE.AmbientLight(0x404060);
+            scene.add(ambient);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+            dirLight.position.set(2,5,3);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+            const goldLight = new THREE.PointLight(0xd4af37, 0.8);
+            goldLight.position.set(1,2,2);
+            scene.add(goldLight);
+            
+            const mainBuilding = new THREE.Mesh(new THREE.BoxGeometry(1.8,0.8,1.8), new THREE.MeshStandardMaterial({ color:0x2a2a2a, roughness:0.4, metalness:0.1 }));
+            mainBuilding.castShadow = mainBuilding.receiveShadow = true;
+            scene.add(mainBuilding);
+            
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(1.2,0.03,16,100), new THREE.MeshStandardMaterial({ color:0xd4af37, emissive: new THREE.Color(0x553300) }));
+            ring.rotation.x = Math.PI/2;
+            ring.position.y = 0.5;
+            scene.add(ring);
+            
+            for (let i=0; i<12; i++) {
+                const small = new THREE.Mesh(new THREE.BoxGeometry(0.15,0.15,0.15), new THREE.MeshStandardMaterial({ color:0xd4af37 }));
+                small.position.set(Math.sin(i)*1.5, 0.2+Math.random()*0.5, Math.cos(i)*1.5);
+                scene.add(small);
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                mainBuilding.rotation.y += 0.002;
+                ring.rotation.z += 0.005;
+                renderer.render(scene, camera);
+            }
+            animate();
+            
+            window.addEventListener('resize', ()=>{
+                if(container) {
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                    camera.aspect = container.clientWidth/container.clientHeight;
+                    camera.updateProjectionMatrix();
+                }
             });
-            img.addEventListener('load', function() {
-                console.log('✅ इमेज लोड हो गई:', this.src);
+        }
+        
+        // Three.js particle background for slide1
+        function initParticles() {
+            const container = document.getElementById('three-particles');
+            if(!container) return;
+            const sceneP = new THREE.Scene();
+            const cameraP = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            cameraP.position.z = 5;
+            const rendererP = new THREE.WebGLRenderer({ alpha: true });
+            rendererP.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(rendererP.domElement);
+            const particlesGeo = new THREE.BufferGeometry();
+            const count = 1000;
+            const posArray = new Float32Array(count*3);
+            for(let i=0; i<count*3; i+=3) {
+                posArray[i] = (Math.random()-0.5)*20;
+                posArray[i+1] = (Math.random()-0.5)*20;
+                posArray[i+2] = (Math.random()-0.5)*20;
+            }
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particles = new THREE.Points(particlesGeo, new THREE.PointsMaterial({ size:0.015, color:0xd4af37, transparent:true }));
+            sceneP.add(particles);
+            function animateP() {
+                requestAnimationFrame(animateP);
+                particles.rotation.y += 0.0005;
+                rendererP.render(sceneP, cameraP);
+            }
+            animateP();
+            window.addEventListener('resize', ()=>{
+                rendererP.setSize(window.innerWidth, window.innerHeight);
+                cameraP.aspect = window.innerWidth/window.innerHeight;
+                cameraP.updateProjectionMatrix();
             });
+        }
+        
+        function drawChart() {
+            const ctx = document.getElementById('visitorChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Midwest', 'International', 'Other US'],
+                    datasets: [{
+                        data: [60, 25, 15],
+                        backgroundColor: ['#d4af37', '#b8860b', '#5a5a5a'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { legend: { labels: { color: 'white' } } } }
+            });
+        }
+        
+        // Swiper
+        new Swiper('.mySwiper', {
+            slidesPerView: 2,
+            spaceBetween: 20,
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
         });
+        
+        // ROI Slider
+        const slider = document.getElementById('budgetSlider');
+        if(slider) {
+            slider.addEventListener('input', (e)=>{
+                const val = e.target.value;
+                document.getElementById('impressionValue').textContent = (val/10000 * 250000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                document.getElementById('reachValue').textContent = (val/10000 * 85000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            });
+        }
+        
+        // Initialize
+        updateUI();
+        gsap.registerPlugin(ScrollTrigger);
+        initThree();
+        initParticles();
+        
+        // Image fallback
+        document.querySelectorAll('img').forEach(i=> i.addEventListener('error', function(){ this.src='images/moa-aerial-golden-hour.png'; }));
     })();
 </script>
 </body>
