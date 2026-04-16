@@ -2,492 +2,870 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Mall of America · Next‑Gen Sales Deck</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mall of America · The Destination Deck</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <!-- GSAP -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
     <style>
-        /* ===== RESET & BASE ===== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ===== LUXURY RESET & BASE ===== */
+        :root {
+            --bg-color: #030303;
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
+            --gold: #d4af37;
+            --gold-dim: rgba(212, 175, 55, 0.3);
+            --sidebar-width: 280px;
+            --glass-bg: rgba(20, 20, 20, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background: #050505;
-            color: #f5f5f7;
-            line-height: 1.5;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden; /* App-like feel */
             -webkit-font-smoothing: antialiased;
-            overflow: hidden;
-            height: 100vh;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ===== LAYOUT ===== */
+        .app-container {
+            display: flex;
             width: 100vw;
+            height: 100vh;
+            position: relative;
         }
-        .deck-container { position: relative; width: 100%; height: 100vh; overflow: hidden; }
+
+        /* ===== SIDEBAR NAVIGATION ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 100;
+        }
+
+        .brand-logo {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: -0.03em;
+            margin-bottom: 4rem;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+        .brand-logo span { font-weight: 300; display: block; font-size: 0.9rem; color: var(--gold); letter-spacing: 2px; margin-top: 0.3rem;}
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color 0.4s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .nav-item span.chapter-num {
+            font-size: 0.75rem;
+            opacity: 0.5;
+            font-weight: 600;
+            letter-spacing: 1px;
+            width: 20px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+        }
+        
+        .nav-item.active span.chapter-num {
+            opacity: 1;
+            color: var(--gold);
+        }
+
+        .nav-indicator {
+            position: absolute;
+            left: -2rem;
+            width: 3px;
+            height: 0;
+            background-color: var(--gold);
+            transition: height 0.4s var(--transition-smooth), transform 0.4s var(--transition-smooth);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .nav-item.active .nav-indicator {
+            height: 100%;
+        }
+
+        .sidebar-footer {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ===== MAIN PRESENTATION AREA ===== */
+        .deck-area {
+            flex-grow: 1;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
+        }
+
         .slide {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; visibility: hidden;
-            transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), visibility 0.8s;
-            overflow-y: auto; overflow-x: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            visibility: hidden;
+            opacity: 0;
+            z-index: 1;
+            display: flex;
+            align-items: center;
         }
-        .slide.active { opacity: 1; visibility: visible; z-index: 10; }
-        .slide-content {
-            max-width: 1440px; margin: 0 auto; padding: 5rem 4rem;
-            position: relative; z-index: 5; min-height: 100vh;
-            display: flex; flex-direction: column; justify-content: center;
+        
+        .slide.active {
+            visibility: visible;
+            opacity: 1;
+            z-index: 10;
         }
-        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
-        .video-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 30% 40%, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.85) 100%);
+
+        .slide-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            transform: scale(1.05); /* For GSAP effect */
+        }
+
+        .slide-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);
             z-index: -1;
         }
-        h1 { font-size: clamp(3.5rem, 8vw, 7rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.04em; margin-bottom: 1.5rem; }
-        h2 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
-        .gold-accent { color: #d4af37; }
-        .stat-number { font-size: 3.8rem; font-weight: 800; color: #d4af37; line-height: 1; }
-        .stat-label { text-transform: uppercase; letter-spacing: 3px; font-size: 0.9rem; opacity: 0.75; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-        .glass-card {
-            background: rgba(20,20,20,0.5); backdrop-filter: blur(16px);
-            border: 1px solid rgba(212,175,55,0.2); border-radius: 36px;
-            padding: 2.5rem; box-shadow: 0 30px 50px -15px rgba(0,0,0,0.5);
+
+        .content-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 4rem;
+            z-index: 5;
+            position: relative;
         }
+
+        /* ===== COMPONENT STYLES ===== */
+        .tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--gold-dim);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            background: rgba(212,175,55,0.05);
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 4vw, 4rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .gold-accent { color: var(--gold); font-family: 'Playfair Display', serif; font-style: italic; }
+
+        p.hero-p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            font-weight: 300;
+        }
+
+        /* Luxury Glass Card */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+        }
+
         .btn {
-            display: inline-block; background: #d4af37; color: #050505;
-            padding: 1rem 2.8rem; border-radius: 60px; font-weight: 700;
-            text-decoration: none; border: 1px solid #d4af37;
-            transition: all 0.3s; letter-spacing: 0.03em; cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            color: #000;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 1rem 2.5rem;
+            border-radius: 40px;
+            text-decoration: none;
+            transition: transform 0.3s, background 0.3s;
+            cursor: pointer;
+            border: none;
         }
-        .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.35); margin-left: 1rem; }
-        .btn-outline:hover { background: white; color: #050505; }
-        .btn:hover { background: transparent; color: #d4af37; }
-        .canvas-3d-container { width: 100%; height: 500px; border-radius: 32px; overflow: hidden; border: 1px solid rgba(212,175,55,0.3); }
-        /* Navigation */
-        .nav-fixed {
-            position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 200;
-            display: flex; align-items: center; gap: 1.2rem;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(20px);
-            padding: 0.9rem 2.5rem; border-radius: 100px;
-            border: 1px solid rgba(212,175,55,0.4);
+        
+        .btn:hover { transform: scale(1.05); background: var(--text-main); }
+        .btn-gold { background: var(--gold); color: #000; }
+        .btn-gold:hover { background: #ebd58b; }
+        .btn-outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
+
+        /* Stats Component */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
-        .nav-arrow { background: transparent; border: none; color: white; font-size: 1.4rem; cursor: pointer; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
-        .nav-arrow:hover { background: #d4af37; color: black; }
-        .nav-dots { display: flex; gap: 0.8rem; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: all 0.3s; border: none; }
-        .dot.active { background: #d4af37; width: 28px; border-radius: 20px; }
-        .progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, #d4af37, #f5e7a3); z-index: 300; transition: width 0.4s; }
-        .persona-switch {
-            position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
-            background: rgba(20,20,20,0.7); backdrop-filter: blur(16px);
-            padding: 0.5rem; border-radius: 60px; border: 1px solid #d4af37;
-            display: flex; gap: 0.5rem;
+
+        .stat-item h4 {
+            font-size: 3.5rem;
+            font-weight: 200;
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.05em;
         }
-        .persona-btn { background: transparent; border: none; color: #fff; padding: 0.8rem 2rem; border-radius: 40px; font-weight: 600; cursor: pointer; }
-        .persona-btn.active { background: #d4af37; color: #050505; }
-        .deck-logo { position: fixed; top: 2rem; left: 2rem; z-index: 200; font-weight: 800; font-size: 1.8rem; letter-spacing: -0.02em; color: white; text-transform: uppercase; }
-        .deck-logo span { font-weight: 300; color: #d4af37; }
-        .sub-module-tag { display: inline-block; background: rgba(212,175,55,0.15); border: 1px solid #d4af37; color: #d4af37; padding: 0.3rem 1.5rem; border-radius: 40px; margin-bottom: 1.5rem; }
-        .swiper { width: 100%; padding: 20px 0 40px; }
-        .swiper-slide { background: rgba(30,30,30,0.6); backdrop-filter: blur(10px); border-radius: 28px; padding: 2rem; border: 1px solid rgba(212,175,55,0.15); height: auto; }
-        .brand-logo { font-size: 2rem; font-weight: 700; margin-bottom: 0.8rem; color: #d4af37; }
-        @media (max-width: 1024px) { .slide-content { padding: 3rem 2rem; } .grid-2 { grid-template-columns: 1fr; gap: 2.5rem; } }
-        @media (max-width: 600px) { .persona-switch { bottom: 5rem; } }
+        .stat-item .unit { font-size: 1.5rem; color: var(--gold); font-weight: 500; }
+        .stat-item p { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); }
+
+        /* Sub-module overlay architecture */
+        .sub-module-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s var(--transition-smooth), visibility 0.5s;
+        }
+        .sub-module-overlay.active { opacity: 1; visibility: visible; }
+        
+        .sub-module-content {
+            width: 85%;
+            height: 85%;
+            background: #111;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            padding: 4rem;
+            overflow-y: auto;
+            transform: translateY(30px);
+            transition: transform 0.6s var(--transition-smooth);
+        }
+        .sub-module-overlay.active .sub-module-content { transform: translateY(0); }
+        
+        .close-sub-module {
+            position: absolute;
+            top: 2rem; right: 2rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background 0.3s;
+        }
+        .close-sub-module:hover { background: rgba(255,255,255,0.2); }
+
+        /* Media queries */
+        @media (max-width: 1024px) {
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; padding: 1.5rem; border-right: none; border-bottom: 1px solid var(--glass-border); position: absolute; top:0; background: rgba(5,5,5,0.9); }
+            .nav-menu { flex-direction: row; overflow-x: auto; padding-bottom: 1rem; }
+            .nav-item { white-space: nowrap; }
+            .nav-indicator { top: auto; bottom: -10px; left: 0; width: 0; height: 2px; }
+            .nav-item.active .nav-indicator { width: 100%; }
+            .slide-overlay { background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 100%); }
+            .content-container { padding: 0 2rem; margin-top: 6rem; }
+        }
+        
+        /* Utility */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .swiper { width: 100%; padding: 20px 0 50px 0; }
+        .swiper-wrapper { align-items: center; }
+        .swiper-slide { transition: transform 0.4s; overflow: hidden; border-radius: 20px; }
+        .swiper-slide img { width: 100%; height: 400px; object-fit: cover; border-radius: 20px; }
+        .swiper-slide-active { transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-<div class="progress-bar" id="progressBar"></div>
-<div class="deck-logo">MALL<span>of</span>AMERICA</div>
+<div class="app-container">
 
-<!-- Persona Toggle -->
-<div class="persona-switch">
-    <button class="persona-btn active" data-persona="brand"><i class="fas fa-store"></i> Brand</button>
-    <button class="persona-btn" data-persona="event"><i class="fas fa-calendar-star"></i> Event</button>
-</div>
+    <!-- SIDEBAR NAVIGATION (Non-Linear Architecture) -->
+    <nav class="sidebar">
+        <div class="brand-logo">
+            MALL OF AMERICA
+            <span>The Platform</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item active" data-target="slide-overview">
+                <div class="nav-indicator"></div>
+                <span class="chapter-num">01</span> Overview
+            </li>
+            <li class="nav-item" data-target="slide-platform">
+                <div class="nav-indicator"></div>
+                <span class="chapter-num">02</span> The Scale
+            </li>
+            <li class="nav-item" data-target="slide-retail">
+                <div class="nav-indicator"></div>
+                <span class="chapter-num">03</span> Luxury Retail
+            </li>
+            <li class="nav-item" data-target="slide-attractions">
+                <div class="nav-indicator"></div>
+                <span class="chapter-num">04</span> Built-In Audience
+            </li>
+            <li class="nav-item" data-target="slide-events">
+                <div class="nav-indicator"></div>
+                <span class="chapter-num">05</span> Event Stages
+            </li>
+            <li class="nav-item" data-target="slide-cta">
+                <div class="nav-indicator"></div>
+                <span class="chapter-num">06</span> Connect
+            </li>
+        </ul>
 
-<div class="deck-container">
-    <!-- SLIDE 1: HERO -->
-    <div class="slide active" id="slide1">
-        <video class="video-bg" autoplay muted loop playsinline poster="https://images.pexels.com/photos/2884590/pexels-photo-2884590.jpeg">
-            <source src="Mall_of_America_Video_Links_AI_Generation.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay"></div>
-        <div id="three-particles" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events: none;"></div>
-        <div class="slide-content" style="max-width:1300px;">
-            <div class="sub-module-tag" id="heroSub">RETAIL POWERHOUSE · LEASING OPPORTUNITIES</div>
-            <h1 id="heroHeadline">
-                <span>40 Million Visitors.</span>
-                <span>One Destination.</span>
-                <span class="gold-accent" style="display:block; font-size:clamp(2.5rem,5vw,4rem);">Build your flagship inside the most visited destination in America.</span>
-            </h1>
-            <p style="font-size:1.4rem; max-width:750px; opacity:0.9; margin-bottom:2rem;">
-                <i class="fas fa-map-pin" style="color:#d4af37;"></i> 5.6M sq ft · $2B+ impact · 520+ stores
-            </p>
-            <div>
-                <a class="btn" id="heroCtaBtn">Explore Leasing →</a>
-                <a class="btn btn-outline">Request Deck</a>
-            </div>
-            <div class="glass-card" style="max-width:550px; margin-top:3rem; padding:1.5rem 2rem;">
-                <i class="fas fa-chart-line" style="color:#d4af37; margin-right:10px;"></i>
-                <span style="font-size:1.3rem;">Avg. sales per sq ft: <strong>$850+</strong> · Top 1% US retail</span>
+        <div class="sidebar-footer">
+            <p>Confidential Sales Deck<br>Interactive Experience</p>
+        </div>
+    </nav>
+
+    <!-- CONTENT DECK -->
+    <main class="deck-area">
+        
+        <!-- 01 OVERVIEW -->
+        <div class="slide active" id="slide-overview">
+            <video class="slide-bg" autoplay muted loop playsinline poster="https://images.pexels.com/photos/2884590/pexels-photo-2884590.jpeg">
+                <source src="Mall_of_America_Video_Links_AI_Generation.mp4" type="video/mp4">
+            </video>
+            <div class="slide-overlay"></div>
+            <div id="three-particles" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events: none;"></div>
+            
+            <div class="content-container">
+                <div class="gsap-elem tag">40 Million Annual Visitors</div>
+                <h1 class="gsap-elem">More Than A Mall.<br>A <span class="gold-accent" style="font-family: inherit; font-style: normal; color: #fff;">Global</span> Destination.</h1>
+                <p class="gsap-elem hero-p">Presenting the premier platform for luxury flagships, brand activations, and large-scale entertainment in North America. No standalone retailer can generate this scale of cultural gravity.</p>
+                
+                <div class="gsap-elem" style="display:flex; gap:1.5rem; margin-top:2rem;">
+                    <button class="btn btn-gold nav-jump" data-target="slide-platform">Explore The Platform</button>
+                    <button class="btn btn-outline" onclick="openSubModule('venue-specs')">View Capacities</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- SLIDE 2: WHY MOA + 3D + Chart -->
-    <div class="slide" id="slide2">
-        <div class="slide-content">
-            <span class="sub-module-tag">Unmatched Platform</span>
-            <div class="grid-2">
-                <div>
-                    <h2>More than a mall.<br><span class="gold-accent">A city within a city.</span></h2>
-                    <p style="font-size:1.2rem; margin-bottom:2rem;">Largest retail & entertainment complex in North America. $2.1B annual economic impact.</p>
-                    <div style="display:flex; gap:2rem; margin-bottom:2rem;">
-                        <div><span class="stat-number">40</span><span class="stat-number">M+</span> <span class="stat-label">Annual visitors</span></div>
-                        <div><span class="stat-number">95</span><span class="stat-number">%</span> <span class="stat-label">Occupancy</span></div>
+        <!-- 02 THE SCALE -->
+        <div class="slide" id="slide-platform">
+            <div class="slide-bg" style="background: url('images/moa-aerial-golden-hour.png') center/cover;"></div>
+            <div class="slide-overlay" style="background: linear-gradient(90deg, #050505 40%, rgba(5,5,5,0.2) 100%);"></div>
+            
+            <div class="content-container">
+                <div class="grid-2">
+                    <div>
+                        <div class="gsap-elem tag">Economic Engine</div>
+                        <h2 class="gsap-elem">A city within<br>a <span class="gold-accent">city.</span></h2>
+                        <p class="gsap-elem hero-p">Spanning 5.6 million square feet, it is the largest retail and entertainment complex in the Western Hemisphere. A $2.1B annual economic impact driven by tourism and loyalty.</p>
+                        
+                        <div class="gsap-elem stat-grid">
+                            <div class="stat-item"><h4>40<span class="unit">M+</span></h4><p>Annual Guests</p></div>
+                            <div class="stat-item"><h4>$2<span class="unit">B</span></h4><p>Economic Impact</p></div>
+                            <div class="stat-item"><h4>520<span class="unit">+</span></h4><p>Brand Concepts</p></div>
+                        </div>
                     </div>
-                    <div class="chart-container" style="background:rgba(0,0,0,0.3); padding:1.5rem; border-radius:28px;">
-                        <canvas id="visitorChart" width="400" height="200" style="width:100%; height:200px;"></canvas>
-                        <p style="text-align:center; margin-top:10px;"><i class="fas fa-users"></i> 60% Midwest · 40% International</p>
+                    <div class="gsap-elem glass-panel" style="background: rgba(0,0,0,0.6);">
+                        <h3 style="margin-bottom: 1rem; font-weight: 400; font-family:'Playfair Display', serif;">Audience Demographics</h3>
+                        <canvas id="visitorChart" style="width:100%; height:250px;"></canvas>
+                        <p style="text-align:center; font-size: 0.85rem; color:var(--text-muted); margin-top: 1rem;">Over 40% of guests travel from out of state or internationally.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 03 LUXURY RETAIL -->
+        <div class="slide" id="slide-retail">
+            <div class="slide-bg" style="background: url('images/moa-luxury-retail-interior.png') center/cover;"></div>
+            <div class="slide-overlay" style="background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.9) 100%);"></div>
+            
+            <div class="content-container" style="max-width: 1400px; padding: 0 2rem;">
+                <div style="text-align:center; margin-bottom: 3rem;">
+                    <div class="gsap-elem tag">Flagship Ecosystem</div>
+                    <h2 class="gsap-elem">Where brands become <span class="gold-accent">legends.</span></h2>
+                </div>
+                
+                <div class="gsap-elem swiper luxury-swiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <img src="https://images.pexels.com/photos/545014/pexels-photo-545014.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Boutique">
+                            <div class="glass-panel" style="position:absolute; bottom:20px; left:20px; right:20px; padding:1.5rem;">
+                                <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:5px;">The Luxury Wing</h3>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Curated high-end boutiques and bespoke services.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <img src="images/moa-luxury-retail-interior.png" alt="Retail">
+                            <div class="glass-panel" style="position:absolute; bottom:20px; left:20px; right:20px; padding:1.5rem;">
+                                <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:5px;">Global Flagships</h3>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Highest volume locations for top-tier international brands.</p>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <img src="images/moa-upscale-dining.jpeg" alt="Dining">
+                            <div class="glass-panel" style="position:absolute; bottom:20px; left:20px; right:20px; padding:1.5rem;">
+                                <h3 style="font-family:'Playfair Display', serif; font-size:1.5rem; margin-bottom:5px;">Elevated Dining</h3>
+                                <p style="font-size:0.85rem; color:var(--text-muted);">Food as a lifestyle destination, featuring celebrity chefs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 04 ATTRACTIONS (ROI) -->
+        <div class="slide" id="slide-attractions">
+             <!-- Using video background for energy -->
+             <video class="slide-bg" autoplay muted loop playsinline>
+                <source src="Video_Generation_Prompt_and_Steps.mp4" type="video/mp4">
+            </video>
+            <div class="slide-overlay" style="background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 100%);"></div>
+
+            <div class="content-container">
+                <div class="grid-2">
+                    <div>
+                        <div class="gsap-elem tag">Built-in Foot Traffic</div>
+                        <h2 class="gsap-elem">Attractions that command <span class="gold-accent">attention.</span></h2>
+                        <ul class="gsap-elem" style="list-style:none; display:flex; flex-direction:column; gap:2rem; margin-top:2rem;">
+                            <li>
+                                <h3 style="color:var(--gold); font-size:1.2rem; margin-bottom:0.5rem; font-family:'Inter', sans-serif;">Nickelodeon Universe®</h3>
+                                <p style="color:var(--text-muted);">A lush 7-acre indoor theme park generating massive multi-generational dwell time.</p>
+                            </li>
+                            <li>
+                                <h3 style="color:var(--gold); font-size:1.2rem; margin-bottom:0.5rem; font-family:'Inter', sans-serif;">SEA LIFE® Aquarium</h3>
+                                <p style="color:var(--text-muted);">A 1.2-million-gallon immersive aquatic experience drawing daily crowds.</p>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- ROI Calculator Glass Panel -->
+                    <div class="gsap-elem glass-panel">
+                        <h3 style="font-family:'Playfair Display', serif; font-size:1.8rem; margin-bottom:1.5rem;">Sponsorship ROI Model</h3>
+                        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:2rem;">Estimate your brand's reach based on real-time footfall metrics.</p>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <label style="display:flex; justify-content:space-between; font-weight:600; font-size:0.85rem; margin-bottom:1rem; text-transform:uppercase; letter-spacing:1px;">
+                                Activation Budget 
+                                <span id="budgetValue" style="color:var(--gold);">$100,000</span>
+                            </label>
+                            <input type="range" id="roiSlider" min="20000" max="500000" step="10000" value="100000" style="width:100%; accent-color: var(--gold);">
+                        </div>
+                        
+                        <div style="display:flex; justify-content:space-between; border-top:1px solid var(--glass-border); padding-top:1.5rem;">
+                            <div>
+                                <h4 id="calcImpressions" style="font-size:2rem; font-weight:300; letter-spacing:-1px;">2.5M</h4>
+                                <span style="font-size:0.7rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px;">Guaranteed Impressions</span>
+                            </div>
+                            <div style="text-align:right;">
+                                <h4 id="calcReach" style="font-size:2rem; font-weight:300; letter-spacing:-1px; color:var(--gold);">850k</h4>
+                                <span style="font-size:0.7rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px;">Unique Engagements</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 05 EVENTS -->
+        <div class="slide" id="slide-events">
+            <div class="slide-bg" style="background: url('images/moa-concert-rotunda.png') center/cover;"></div>
+            <div class="slide-overlay" style="background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%);"></div>
+
+            <div class="content-container">
+                <div class="gsap-elem tag">The Platform</div>
+                <h2 class="gsap-elem">Your brand.<br><span class="gold-accent">Center stage.</span></h2>
+                <p class="gsap-elem hero-p">From global product launches to A-list concerts, the property serves as a broadcast-ready stage. Over 300 highly-produced events take place annually.</p>
+                
+                <!-- This button demonstrates "Expandable Architecture" -->
+                <button class="gsap-elem btn btn-gold" style="margin-top:2rem;" onclick="openSubModule('venue-specs')">
+                    <i class="fas fa-layer-group" style="margin-right:10px;"></i> Explore Venue Architecture
+                </button>
+            </div>
+        </div>
+
+        <!-- 06 CTA -->
+        <div class="slide" id="slide-cta">
+            <div class="slide-bg" style="background: #0a0a0a;"></div>
+            <div id="three-canvas-container" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1;"></div>
+            
+            <div class="content-container" style="text-align:center;">
+                <div class="gsap-elem tag">Next Steps</div>
+                <h2 class="gsap-elem">Ready to command<br>the <span class="gold-accent" style="color:var(--text-main);">market?</span></h2>
+                <p class="gsap-elem hero-p" style="margin: 0 auto 3rem auto;">Bespoke proposals are available for visionary brands.</p>
+                
+                <div class="gsap-elem" style="display:flex; justify-content:center; gap:1.5rem;">
+                    <a href="#" class="btn btn-gold">Initiate Leasing Conversation</a>
+                    <a href="#" class="btn btn-outline">Corporate Sponsorship Inquiry</a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- EXPANDABLE SUB-MODULE (EVENTS ARCHITECTURE) -->
+    <div class="sub-module-overlay" id="venue-specs">
+        <div class="sub-module-content">
+            <button class="close-sub-module" onclick="closeSubModules()"><i class="fas fa-times"></i></button>
+            
+            <div class="tag" style="margin-bottom:1rem;">Deep Dive Sub-Module</div>
+            <h2 style="font-family:'Playfair Display', serif; margin-bottom: 2rem;">Venue Architecture & Capabilities</h2>
+            
+            <div class="grid-2" style="align-items:start;">
                 <div>
-                    <div id="three-canvas-container" class="canvas-3d-container"></div>
-                    <p style="margin-top:1rem; opacity:0.8;"><i class="fas fa-cube"></i> Interactive 3D preview · Drag to rotate (auto)</p>
-                </div>
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; margin-top:3rem;">
-                <div class="glass-card"><span class="stat-number">520+</span> <span class="stat-label">specialty stores</span></div>
-                <div class="glass-card"><span class="stat-number">80+</span> <span class="stat-label">dining concepts</span></div>
-                <div class="glass-card"><span class="stat-number">300+</span> <span class="stat-label">annual events</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 3: RETAIL & LUXURY (Swiper) -->
-    <div class="slide" id="slide3">
-        <div class="slide-content">
-            <span class="sub-module-tag">Flagship Ecosystem</span>
-            <h2>Where brands become <span class="gold-accent">legends.</span></h2>
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide"><div class="brand-logo">NIKE</div><p>#1 global volume store</p><img src="images/moa-luxury-retail-interior.png" style="width:100%; border-radius:16px; margin-top:10px;" alt="Nike"></div>
-                    <div class="swiper-slide"><div class="brand-logo">LULULEMON</div><p>Top 3 North America</p><img src="images/moa-aerial-golden-hour.png" style="width:100%; border-radius:16px;" alt="Lululemon"></div>
-                    <div class="swiper-slide"><div class="brand-logo">CANADA GOOSE</div><p>Flagship experience</p><img src="images/moa-upscale-dining.jpeg" style="width:100%; border-radius:16px;" alt="Canada Goose"></div>
-                    <div class="swiper-slide"><div class="brand-logo">SKIMS</div><p>First-to-market</p><img src="images/moa-nickelodeon-universe.png" style="width:100%; border-radius:16px;"></div>
-                </div>
-                <div class="swiper-pagination"></div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-            </div>
-            <div style="margin-top:2rem;" class="glass-card">
-                <i class="fas fa-trophy gold-accent"></i> <strong>Leasing Paths:</strong> Luxury Wing · Flagship · Pop-up · F&B
-                <a href="#" class="btn" style="margin-left:2rem;">Inquire Now</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 4: ATTRACTIONS + ROI CALCULATOR -->
-    <div class="slide" id="slide4">
-        <div class="slide-content">
-            <span class="sub-module-tag">Built-in Audience</span>
-            <div class="grid-2">
-                <div>
-                    <h2>World-class attractions.</h2>
-                    <div style="margin:2rem 0;"><h3 style="color:#d4af37;">Nickelodeon Universe</h3><p>7-acre indoor theme park · 27+ rides</p></div>
-                    <div style="margin:2rem 0;"><h3 style="color:#d4af37;">FlyOver America</h3><p>Immersive flight ride</p></div>
-                    <div style="margin:2rem 0;"><h3 style="color:#d4af37;">SEA LIFE Aquarium</h3><p>1.2M gallon aquarium</p></div>
-                </div>
-                <div class="glass-card">
-                    <h3><i class="fas fa-calculator"></i> Sponsorship ROI Estimator</h3>
-                    <label>Budget ($)</label>
-                    <input type="range" id="budgetSlider" min="10000" max="500000" value="100000" step="5000" style="width:100%;">
-                    <p>Estimated Impressions: <span id="impressionValue">2.5M</span></p>
-                    <p>Projected Reach: <span id="reachValue">850k</span></p>
-                    <p style="margin-top:1rem;"><i class="fas fa-chart-pie"></i> Based on 40M annual visitors</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 5: EVENTS -->
-    <div class="slide" id="slide5">
-        <div class="slide-content">
-            <span class="sub-module-tag">Global Stage</span>
-            <h2>Your brand.<br>Center stage.</h2>
-            <div class="grid-2">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-                    <div class="glass-card"><i class="fas fa-music gold-accent"></i><h4>Concerts</h4><p>Huntington Bank Rotunda</p></div>
-                    <div class="glass-card"><i class="fas fa-bullhorn"></i><h4>Activations</h4><p>Pop-ups & launches</p></div>
-                    <div class="glass-card"><i class="fas fa-users"></i><h4>Corporate</h4><p>JW Marriott</p></div>
-                    <div class="glass-card"><i class="fas fa-video"></i><h4>Performing Arts</h4></div>
+                    <h3 style="color:var(--gold); margin-bottom:1rem; font-size:1.4rem;">Huntington Bank Rotunda</h3>
+                    <p style="color:var(--text-muted); margin-bottom:2rem; line-height:1.6;">Our premier open-air multi-level viewing space. Capacity for 5,000+ standing with integrated line-array audio and broadcast lighting grids. Ideal for concerts and celebrity appearances.</p>
+                    
+                    <h3 style="color:var(--gold); margin-bottom:1rem; font-size:1.4rem;">The Grand Atrium</h3>
+                    <p style="color:var(--text-muted); margin-bottom:2rem; line-height:1.6;">A high-traffic, structurally stunning corridor designated for pop-up retail, massive art installations, and automotive showcases.</p>
+                    
+                    <button class="btn btn-outline" style="margin-top:1rem;">Download Tech Specs (PDF)</button>
                 </div>
                 <div>
-                    <img src="images/moa-concert-rotunda.png" alt="Concert" style="width:100%; border-radius:32px;">
+                    <img src="images/moa-concert-rotunda.png" alt="Rotunda" style="width:100%; border-radius:16px; margin-bottom: 1rem;">
+                    <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Live Event Configuration</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- SLIDE 6: DINING -->
-    <div class="slide" id="slide6">
-        <div class="slide-content">
-            <div class="grid-2">
-                <div><h2>80+ restaurants.<br><span class="gold-accent">Food as destination.</span></h2><p>Celebrity chefs · Global street food</p><span class="stat-number">50+</span> <span class="stat-label">new concepts in 5y</span></div>
-                <div><img src="images/moa-upscale-dining.jpeg" onerror="this.src='images/moa-upscale-dining.jpg'" style="border-radius:32px; width:100%;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- SLIDE 7: CTA -->
-    <div class="slide" id="slide7">
-        <div class="slide-content" style="text-align:center; justify-content:center;">
-            <h2>Secure your place.</h2>
-            <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-                <a href="#" class="btn">Leasing</a>
-                <a href="#" class="btn btn-outline">Sponsorships</a>
-                <a href="#" class="btn btn-outline">Book Event</a>
-            </div>
-        </div>
-    </div>
 </div>
 
-<!-- Navigation -->
-<div class="nav-fixed">
-    <button class="nav-arrow" id="prevSlide"><i class="fas fa-chevron-left"></i></button>
-    <div class="nav-dots" id="navDots"></div>
-    <button class="nav-arrow" id="nextSlide"><i class="fas fa-chevron-right"></i></button>
-    <span class="slide-counter" id="slideCounter">1 / 7</span>
-</div>
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
-    (function(){
-        "use strict";
-        
-        // ---------- SLIDE NAVIGATION ----------
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
-        let currentSlide = 0;
-        const progressBar = document.getElementById('progressBar');
-        const slideCounter = document.getElementById('slideCounter');
-        const navDots = document.getElementById('navDots');
-        
-        function createDots() {
-            navDots.innerHTML = '';
-            for (let i=0; i<totalSlides; i++) {
-                const dot = document.createElement('button');
-                dot.classList.add('dot');
-                dot.addEventListener('click', ()=> goToSlide(i));
-                navDots.appendChild(dot);
+    /* =======================================
+       1. CORE DECK ARCHITECTURE (NON-LINEAR)
+       ======================================= */
+    const navItems = document.querySelectorAll('.nav-item');
+    const slides = document.querySelectorAll('.slide');
+    const navJumps = document.querySelectorAll('.nav-jump');
+    let currentActiveId = 'slide-overview';
+
+    function initDeck() {
+        // Hide all except first
+        slides.forEach(slide => {
+            if(slide.id !== currentActiveId) {
+                gsap.set(slide, { opacity: 0, visibility: 'hidden' });
+                // Reset slide-specific elements
+                const elems = slide.querySelectorAll('.gsap-elem');
+                gsap.set(elems, { y: 30, opacity: 0 });
+                const bg = slide.querySelector('.slide-bg');
+                if(bg) gsap.set(bg, { scale: 1.1 });
             }
-        }
-        createDots();
-        
-        function updateUI() {
-            slides.forEach((s,i)=> s.classList.toggle('active', i===currentSlide));
-            document.querySelectorAll('.dot').forEach((d,i)=> d.classList.toggle('active', i===currentSlide));
-            slideCounter.textContent = `${currentSlide+1} / ${totalSlides}`;
-            progressBar.style.width = `${((currentSlide+1)/totalSlides)*100}%`;
-            
-            if (currentSlide === 0) {
-                gsap.from("#slide1 h1 span", { opacity:0, y:50, duration:0.8, stagger:0.15 });
-            }
-            if (currentSlide === 1 && !window.chartDrawn) {
-                drawChart();
-                window.chartDrawn = true;
-            }
-        }
-        
-        function goToSlide(index) {
-            if (index<0) index=0;
-            if (index>=totalSlides) index=totalSlides-1;
-            currentSlide = index;
-            updateUI();
-        }
-        
-        document.getElementById('nextSlide').addEventListener('click', ()=> goToSlide(currentSlide+1));
-        document.getElementById('prevSlide').addEventListener('click', ()=> goToSlide(currentSlide-1));
-        window.addEventListener('keydown', e=> {
-            if (e.key === 'ArrowRight') goToSlide(currentSlide+1);
-            if (e.key === 'ArrowLeft') goToSlide(currentSlide-1);
         });
-        
-        let touchStartX = 0;
-        window.addEventListener('touchstart', e=> touchStartX = e.changedTouches[0].screenX);
-        window.addEventListener('touchend', e=> {
-            const diff = e.changedTouches[0].screenX - touchStartX;
-            if (Math.abs(diff) > 50) diff<0 ? goToSlide(currentSlide+1) : goToSlide(currentSlide-1);
+        // Initial animation
+        animateSlideIn(document.getElementById(currentActiveId));
+    }
+
+    function navigateToSlide(targetId) {
+        if(targetId === currentActiveId) return;
+
+        const currentSlide = document.getElementById(currentActiveId);
+        const targetSlide = document.getElementById(targetId);
+
+        // Update Nav Menu UI
+        navItems.forEach(item => {
+            if(item.dataset.target === targetId) item.classList.add('active');
+            else item.classList.remove('active');
         });
-        
-        // Persona Toggle
-        const personaBtns = document.querySelectorAll('.persona-btn');
-        const heroSub = document.getElementById('heroSub');
-        const heroBtn = document.getElementById('heroCtaBtn');
-        function setPersona(persona) {
-            personaBtns.forEach(b=> b.classList.remove('active'));
-            document.querySelector(`.persona-btn[data-persona="${persona}"]`).classList.add('active');
-            const goldSpan = document.querySelector('#slide1 .gold-accent');
-            if (persona === 'brand') {
-                heroSub.textContent = 'RETAIL POWERHOUSE · LEASING OPPORTUNITIES';
-                goldSpan.textContent = 'Build your flagship inside the most visited destination in America.';
-                heroBtn.textContent = 'Explore Leasing →';
-            } else {
-                heroSub.textContent = 'EVENT PLATFORM · SPONSORSHIP READY';
-                goldSpan.textContent = 'Activate your brand in front of 40 million annual visitors.';
-                heroBtn.textContent = 'Book an Activation →';
+
+        // Outgoing Animation
+        gsap.to(currentSlide, {
+            opacity: 0,
+            duration: 0.6,
+            ease: "power2.inOut",
+            onComplete: () => {
+                currentSlide.classList.remove('active');
+                currentSlide.style.visibility = 'hidden';
             }
+        });
+
+        // Verify elements for incoming
+        targetSlide.classList.add('active');
+        targetSlide.style.visibility = 'visible';
+        
+        animateSlideIn(targetSlide);
+
+        currentActiveId = targetId;
+
+        // Lazy init specifics based on slide
+        if(targetId === 'slide-platform' && !window.chartInitialized) {
+            initChart();
+            window.chartInitialized = true;
         }
-        personaBtns.forEach(btn=> btn.addEventListener('click', ()=> setPersona(btn.dataset.persona)));
-        
-        // Video play
-        const video = document.querySelector('video');
-        if(video) video.play().catch(()=>{ video.muted=true; video.play(); });
-        
-        heroBtn.addEventListener('click', e=> { e.preventDefault(); goToSlide(1); });
-        
-        // ---------- THREE.JS Setup Slide2 ----------
-        function initThree() {
-            const container = document.getElementById('three-canvas-container');
-            if (!container) return;
-            const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x050505);
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(3,2,5);
-            const renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.shadowMap.enabled = true;
-            container.appendChild(renderer.domElement);
+        if(targetId === 'slide-cta' && !window.threeBoxInitialized) {
+            initThreeBox();
+            window.threeBoxInitialized = true;
+        }
+    }
+
+    function animateSlideIn(slideObj) {
+        // Background scale effect
+        const bg = slideObj.querySelector('.slide-bg');
+        if(bg) {
+            gsap.fromTo(bg, {scale: 1.1}, { scale: 1, duration: 4, ease: "power1.out" });
+        }
+
+        // Stagger elements in
+        const elems = slideObj.querySelectorAll('.gsap-elem');
+        if(elems.length > 0) {
+            gsap.fromTo(elems, 
+                { y: 40, opacity: 0 }, 
+                { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power3.out", delay: 0.2 }
+            );
+        }
+
+        gsap.fromTo(slideObj, {opacity: 0}, {opacity: 1, duration: 0.6, ease: "power2.out"});
+    }
+
+    // Bind clicks to sidebar
+    navItems.forEach(nav => {
+        nav.addEventListener('click', () => {
+            navigateToSlide(nav.dataset.target);
+        });
+    });
+
+    // Bind utility buttons
+    navJumps.forEach(btn => {
+        btn.addEventListener('click', () => navigateToSlide(btn.dataset.target));
+    });
+
+
+    /* =======================================
+       2. SUB-MODULE ARCHITECTURE
+       ======================================= */
+    function openSubModule(id) {
+        const modal = document.getElementById(id);
+        modal.classList.add('active');
+    }
+    function closeSubModules() {
+        document.querySelectorAll('.sub-module-overlay').forEach(el => el.classList.remove('active'));
+    }
+
+
+    /* =======================================
+       3. COMPONENTS: ROI SLIDER
+       ======================================= */
+    const roiSlider = document.getElementById('roiSlider');
+    const budgetVal = document.getElementById('budgetValue');
+    const calcImp = document.getElementById('calcImpressions');
+    const calcReach = document.getElementById('calcReach');
+
+    const formatNum = (num) => {
+        if(num >= 1000000) return (num/1000000).toFixed(1) + 'M';
+        if(num >= 1000) return (num/1000).toFixed(0) + 'k';
+        return num;
+    };
+
+    if(roiSlider) {
+        roiSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            budgetVal.textContent = `$${val.toLocaleString()}`;
             
-            const ambient = new THREE.AmbientLight(0x404060);
-            scene.add(ambient);
-            const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-            dirLight.position.set(2,5,3);
-            dirLight.castShadow = true;
-            scene.add(dirLight);
-            const goldLight = new THREE.PointLight(0xd4af37, 0.8);
-            goldLight.position.set(1,2,2);
-            scene.add(goldLight);
+            // Logic: Base multiplier based on foot-traffic API simulation
+            const multiplier = 25; // Impressions per dollar
+            const reachMult = 8.5; // Reach per dollar
             
-            const mainBuilding = new THREE.Mesh(new THREE.BoxGeometry(1.8,0.8,1.8), new THREE.MeshStandardMaterial({ color:0x2a2a2a, roughness:0.4, metalness:0.1 }));
-            mainBuilding.castShadow = mainBuilding.receiveShadow = true;
-            scene.add(mainBuilding);
-            
-            const ring = new THREE.Mesh(new THREE.TorusGeometry(1.2,0.03,16,100), new THREE.MeshStandardMaterial({ color:0xd4af37, emissive: new THREE.Color(0x553300) }));
-            ring.rotation.x = Math.PI/2;
-            ring.position.y = 0.5;
-            scene.add(ring);
-            
-            for (let i=0; i<12; i++) {
-                const small = new THREE.Mesh(new THREE.BoxGeometry(0.15,0.15,0.15), new THREE.MeshStandardMaterial({ color:0xd4af37 }));
-                small.position.set(Math.sin(i)*1.5, 0.2+Math.random()*0.5, Math.cos(i)*1.5);
-                scene.add(small);
-            }
-            
-            function animate() {
-                requestAnimationFrame(animate);
-                mainBuilding.rotation.y += 0.002;
-                ring.rotation.z += 0.005;
-                renderer.render(scene, camera);
-            }
-            animate();
-            
-            window.addEventListener('resize', ()=>{
-                if(container) {
-                    renderer.setSize(container.clientWidth, container.clientHeight);
-                    camera.aspect = container.clientWidth/container.clientHeight;
-                    camera.updateProjectionMatrix();
+            calcImp.textContent = formatNum(val * multiplier);
+            calcReach.textContent = formatNum(val * reachMult);
+        });
+    }
+
+    /* =======================================
+       4. COMPONENTS: CHART.JS & SWIPER
+       ======================================= */
+    function initChart() {
+        const ctx = document.getElementById('visitorChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Midwest Drive-in', 'International Tourism', 'Domestic Flight'],
+                datasets: [{
+                    data: [60, 25, 15],
+                    backgroundColor: ['#d4af37', '#ffffff', '#333333'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                cutout: '75%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#86868b', font: {family: 'Inter'} } }
                 }
-            });
-        }
-        
-        // Three.js particle background for slide1
-        function initParticles() {
-            const container = document.getElementById('three-particles');
-            if(!container) return;
-            const sceneP = new THREE.Scene();
-            const cameraP = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-            cameraP.position.z = 5;
-            const rendererP = new THREE.WebGLRenderer({ alpha: true });
-            rendererP.setSize(window.innerWidth, window.innerHeight);
-            container.appendChild(rendererP.domElement);
-            const particlesGeo = new THREE.BufferGeometry();
-            const count = 1000;
-            const posArray = new Float32Array(count*3);
-            for(let i=0; i<count*3; i+=3) {
-                posArray[i] = (Math.random()-0.5)*20;
-                posArray[i+1] = (Math.random()-0.5)*20;
-                posArray[i+2] = (Math.random()-0.5)*20;
             }
-            particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particles = new THREE.Points(particlesGeo, new THREE.PointsMaterial({ size:0.015, color:0xd4af37, transparent:true }));
-            sceneP.add(particles);
-            function animateP() {
-                requestAnimationFrame(animateP);
-                particles.rotation.y += 0.0005;
-                rendererP.render(sceneP, cameraP);
-            }
-            animateP();
-            window.addEventListener('resize', ()=>{
-                rendererP.setSize(window.innerWidth, window.innerHeight);
-                cameraP.aspect = window.innerWidth/window.innerHeight;
-                cameraP.updateProjectionMatrix();
-            });
-        }
-        
-        function drawChart() {
-            const ctx = document.getElementById('visitorChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Midwest', 'International', 'Other US'],
-                    datasets: [{
-                        data: [60, 25, 15],
-                        backgroundColor: ['#d4af37', '#b8860b', '#5a5a5a'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { plugins: { legend: { labels: { color: 'white' } } } }
-            });
-        }
-        
-        // Swiper
-        new Swiper('.mySwiper', {
-            slidesPerView: 2,
-            spaceBetween: 20,
-            pagination: { el: '.swiper-pagination', clickable: true },
-            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
         });
-        
-        // ROI Slider
-        const slider = document.getElementById('budgetSlider');
-        if(slider) {
-            slider.addEventListener('input', (e)=>{
-                const val = e.target.value;
-                document.getElementById('impressionValue').textContent = (val/10000 * 250000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                document.getElementById('reachValue').textContent = (val/10000 * 85000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            });
+    }
+
+    new Swiper('.luxury-swiper', {
+        slidesPerView: 1.2,
+        spaceBetween: 30,
+        centeredSlides: true,
+        loop: true,
+        autoplay: { delay: 4000, disableOnInteraction: false },
+        breakpoints: {
+            768: { slidesPerView: 2, spaceBetween: 40 }
         }
+    });
+
+
+    /* =======================================
+       5. COMPONENTS: THREE.JS BACKDROPS
+       ======================================= */
+    function initThreeParticles() {
+        const container = document.getElementById('three-particles');
+        if(!container) return;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 10;
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
         
-        // Initialize
-        updateUI();
-        gsap.registerPlugin(ScrollTrigger);
-        initThree();
-        initParticles();
+        const count = 500;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+        const mathRand = () => (Math.random() - 0.5) * 30;
         
-        // Image fallback
-        document.querySelectorAll('img').forEach(i=> i.addEventListener('error', function(){ this.src='images/moa-aerial-golden-hour.png'; }));
-    })();
+        for(let i=0; i<count*3; i++) { positions[i] = mathRand(); }
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        
+        const material = new THREE.PointsMaterial({ size: 0.05, color: 0xd4af37, transparent: true, opacity: 0.6 });
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            particles.rotation.y += 0.0008;
+            particles.rotation.x += 0.0003;
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    }
+
+    function initThreeBox() {
+        const container = document.getElementById('three-canvas-container');
+        if(!container) return;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+        camera.position.z = 12;
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        const geo = new THREE.IcosahedronGeometry(3, 1);
+        const mat = new THREE.MeshBasicMaterial({ color: 0xd4af37, wireframe: true, transparent: true, opacity: 0.15 });
+        const mesh = new THREE.Mesh(geo, mat);
+        group.add(mesh);
+
+        const innerGeo = new THREE.IcosahedronGeometry(2, 0);
+        const innerMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.2, metalness: 0.8 });
+        const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+        group.add(innerMesh);
+
+        // Lights
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5);
+        scene.add(light);
+        
+        const ambient = new THREE.AmbientLight(0x222222);
+        scene.add(ambient);
+        
+        const spot = new THREE.PointLight(0xd4af37, 2, 50);
+        spot.position.set(-5, -5, 5);
+        scene.add(spot);
+
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 2 - 1;
+            const y = -(e.clientY / window.innerHeight) * 2 + 1;
+            gsap.to(group.rotation, { x: y * 0.5, y: x * 0.5, duration: 2 });
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            mesh.rotation.y += 0.002;
+            innerMesh.rotation.y -= 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+
+    // BOOT
+    document.addEventListener("DOMContentLoaded", () => {
+        initThreeParticles();
+        initDeck();
+    });
+
 </script>
 </body>
 </html>
